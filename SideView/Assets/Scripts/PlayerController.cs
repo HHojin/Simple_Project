@@ -13,9 +13,12 @@ public class PlayerController : MonoBehaviour
     };
 
     private NavMeshAgent agent;
+    [SerializeField]
     private Vector3 targetPos;
 
-    private bool isMove = false;
+    [SerializeField]
+    private bool canMove = false;
+    private bool isMoving = false;
     public float doubleClickSecond = 0.25f;
     private bool isOneClick = false;
     private double timer = 0;
@@ -39,7 +42,7 @@ public class PlayerController : MonoBehaviour
             isOneClick = false;
         }
 
-        if (isMove)
+        if (canMove)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -70,7 +73,7 @@ public class PlayerController : MonoBehaviour
         if (DestinationArrived()) // 목적지에 도착했을 떄 Idle animation 실행
         {
             anim.SetInteger("moveType", (int)State.Idle);
-            isMove = false;
+            isMoving = false;
         }
     }
 
@@ -81,16 +84,19 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.rigidbody != null)
+            if (hit.transform.CompareTag("Location"))
             {
                 //Debug.Log("Coll hit!");
-                targetPos = new Vector3(hit.point.x, hit.point.y, this.transform.position.z);
+                if (!isMoving)
+                {
+                    targetPos = new Vector3(hit.point.x, hit.point.y, 0);
+                }
 
-                isMove = true;
+                canMove = true;
             }
             else
             {
-                isMove = false;
+                canMove = false;
             }
         }
     }
@@ -109,5 +115,15 @@ public class PlayerController : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void CheckGroundStatus()
+    {
+        RaycastHit hitInfo;
+
+        if(Physics.Raycast(this.transform.position + Vector3.up, Vector3.down, out hitInfo, 1))
+        {
+            //if(hitInfo.collider.gameObject.name
+        }
     }
 }

@@ -29,22 +29,22 @@ public class CameraController : MonoBehaviour
 
         if(Input.GetKey(KeyCode.W) || mousePos.y >= 0.99f) // 위로 카메라 이동
         {
-            Debug.Log("Press W");
+            //Debug.Log("Press W");
             transform.Translate(moveSpeed * Time.deltaTime * Vector3.up, Space.World);
         }
         if (Input.GetKey(KeyCode.S) || mousePos.y <= 0.01f) // 아래로 카메라 이동
         {
-            Debug.Log("Press S");
+            //Debug.Log("Press S");
             transform.Translate(moveSpeed * Time.deltaTime * Vector3.down, Space.World);
         }
         if (Input.GetKey(KeyCode.A) || mousePos.x <= 0.01f) // 왼쪽으로 카메라 이동
         {
-            Debug.Log("Press A");
+            //Debug.Log("Press A");
             transform.Translate(moveSpeed * Time.deltaTime * Vector3.left, Space.World);
         }
         if (Input.GetKey(KeyCode.D) || mousePos.x >= 0.99f) // 오른쪽으로 카메라 이동
         {
-            Debug.Log("Press D");
+            //Debug.Log("Press D");
             transform.Translate(moveSpeed * Time.deltaTime * Vector3.right, Space.World);
         }
     }
