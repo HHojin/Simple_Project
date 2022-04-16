@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    private static GameManager m_instance;
+
     public static GameManager instance
     {
         get
@@ -17,13 +19,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private static GameManager m_instance;
-
     private void Awake()
     {
         if(instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+
+        DontDestroyOnLoad(this.gameObject);
     }
 }

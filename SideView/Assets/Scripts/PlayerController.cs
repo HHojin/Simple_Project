@@ -12,68 +12,85 @@ public class PlayerController : MonoBehaviour
         Run,
     };
 
-    private NavMeshAgent agent;
+    private NavMeshAgent m_agent;
+    private float m_agentSpeed;
+    private float m_agentoffMeshLinkSpeed = 7.0f;
     [SerializeField]
-    private Vector3 targetPos;
+    private Vector3 m_targetPos;
+    private Vector3 m_tmpTargetPos;
 
     [SerializeField]
-    private bool canMove = false;
-    private bool isMoving = false;
-    public float doubleClickSecond = 0.25f;
-    private bool isOneClick = false;
-    private double timer = 0;
+    private bool m_canMove = false;
+    [SerializeField]
+    private bool m_isMoving = false;
+    public float m_doubleClickSecond = 0.25f;
+    private bool m_isOneClick = false;
+    private double m_timer = 0;
 
-    private Animator anim;
-    //private Collider coll;
+    private Animator m_animator;
+    private Transform m_transform;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
-        //coll = GetComponent<Collider>();
+        m_agent = GetComponent<NavMeshAgent>();
+        m_animator = GetComponent<Animator>();
+        m_transform = GetComponent<Transform>();
     }
 
     void Update()
     {
         FindDestination();
 
-        if (isOneClick && ((Time.time - timer) > doubleClickSecond))
+        if (m_isOneClick && ((Time.time - m_timer) > m_doubleClickSecond))
         {
-            isOneClick = false;
+            m_isOneClick = false;
         }
 
-        if (canMove)
+        if (m_canMove)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (!isOneClick)
+                if (!m_isOneClick)
                 {
                     //Debug.Log("One Click");
-                    timer = Time.time;
-                    isOneClick = true;
+                    m_timer = Time.time;
+                    m_isOneClick = true;
 
                     // 한번 클릭(walk)
-                    anim.SetInteger("moveType", (int)State.Walk);
-                    agent.speed = 7;
+                    m_animator.SetInteger("moveType", (int)State.Walk);
+                    m_agentSpeed = 7.0f;
                 }
-                else if (isOneClick && ((Time.time - timer) < doubleClickSecond))
+                else if (m_isOneClick && ((Time.time - m_timer) < m_doubleClickSecond))
                 {
                     //Debug.Log("Double Click");
-                    isOneClick = false;
+                    m_isOneClick = false;
 
                     // 두번 클릭(run)
-                    anim.SetInteger("moveType", (int)State.Run);
-                    agent.speed = 14;
+                    m_animator.SetInteger("moveType", (int)State.Run);
+                    m_agentSpeed = 14.0f;
                 }
 
-                agent.destination = targetPos;
+                m_agent.destination = m_targetPos;
+                m_isMoving = true;
             }
         }
 
-        if (DestinationArrived()) // 목적지에 도착했을 떄 Idle animation 실행
+        if (m_isMoving)
         {
-            anim.SetInteger("moveType", (int)State.Idle);
-            isMoving = false;
+            if (m_agent.isOnOffMeshLink)
+            {
+                m_agent.speed = m_agentoffMeshLinkSpeed;
+            }
+            else
+            {
+                m_agent.speed = m_agentSpeed;
+            }
+
+            if (DestinationArrived()) // 목적지에 도착했을 떄 Idle animation 실행
+            {
+                m_animator.SetInteger("moveType", (int)State.Idle);
+                m_isMoving = false;
+            }
         }
     }
 
@@ -84,30 +101,31 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.transform.CompareTag("Location"))
+            //if (hit.transform.CompareTag("Location"))
+            if (hit.collider != null)
             {
-                //Debug.Log("Coll hit!");
-                if (!isMoving)
-                {
-                    targetPos = new Vector3(hit.point.x, hit.point.y, 0);
-                }
+                m_tmpTargetPos = new Vector3(hit.point.x, hit.point.y, 0); // screen 좌표상 위치에서
+                Physics.Raycast(m_tmpTargetPos, Vector3.down, out RaycastHit _hit); // Vector3.down 방향
 
-                canMove = true;
+                m_targetPos = _hit.point;
+
+                m_canMove = true;
             }
             else
             {
-                canMove = false;
+                m_canMove = false;
             }
         }
+
     }
 
     private bool DestinationArrived()
     {
-        if (!agent.pathPending)
+        if (!m_agent.pathPending)
         {
-            if (agent.remainingDistance <= agent.stoppingDistance)
+            if (m_agent.remainingDistance <= m_agent.stoppingDistance)
             {
-                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0)
+                if (!m_agent.hasPath || m_agent.velocity.sqrMagnitude == 0)
                 {
                     return true;
                 }
@@ -115,15 +133,5 @@ public class PlayerController : MonoBehaviour
         }
 
         return false;
-    }
-
-    private void CheckGroundStatus()
-    {
-        RaycastHit hitInfo;
-
-        if(Physics.Raycast(this.transform.position + Vector3.up, Vector3.down, out hitInfo, 1))
-        {
-            //if(hitInfo.collider.gameObject.name
-        }
     }
 }
