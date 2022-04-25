@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
                     m_timer = Time.time;
                     m_isOneClick = true;
 
-                    // 한번 클릭(walk)
+                    // walk
                     m_animator.SetInteger("moveType", (int)State.Walk);
                     m_agentSpeed = 7.0f;
                 }
@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
                     //Debug.Log("Double Click");
                     m_isOneClick = false;
 
-                    // 두번 클릭(run)
+                    // run
                     m_animator.SetInteger("moveType", (int)State.Run);
                     m_agentSpeed = 14.0f;
                 }
