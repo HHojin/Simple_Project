@@ -6,7 +6,7 @@ public class WayPoint : MonoBehaviour
 {
     //public GameObject m_character;
 
-    private bool m_doorIsOpening;
+    //private bool m_doorIsOpening;
     public Animator m_openandclose;
 
     private void OnTriggerEnter(Collider other)
@@ -30,7 +30,7 @@ public class WayPoint : MonoBehaviour
     {
         Debug.Log("opening the door");
         m_openandclose.Play("Opening");
-        m_doorIsOpening = true;
+        //m_doorIsOpening = true;
         yield return new WaitForSeconds(.5f);
     }
 
@@ -38,7 +38,7 @@ public class WayPoint : MonoBehaviour
     {
         Debug.Log("closing the door");
         m_openandclose.Play("Closing");
-        m_doorIsOpening = false;
+        //m_doorIsOpening = false;
         yield return new WaitForSeconds(.5f);
     }
 }
